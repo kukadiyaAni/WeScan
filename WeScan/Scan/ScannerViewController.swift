@@ -12,6 +12,7 @@ import AVFoundation
 /// The `ScannerViewController` offers an interface to give feedback to the user regarding quadrilaterals that are detected. It also gives the user the opportunity to capture an image with a detected rectangle.
 public final class ScannerViewController: UIViewController {
     
+    private var canSelectPhoto = false;
     private var captureSessionManager: CaptureSessionManager?
     private let videoPreviewLayer = AVCaptureVideoPreviewLayer()
     
@@ -42,6 +43,15 @@ public final class ScannerViewController: UIViewController {
         return button
     }()
     
+    lazy var selectPhotoButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "gallery", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(selectPhoto), for: .touchUpInside)
+        return button
+    }()
+    
     private lazy var autoScanButton: UIBarButtonItem = {
         let title = NSLocalizedString("wescan.scanning.auto", tableName: nil, bundle: Bundle(for: ScannerViewController.self), value: "Auto", comment: "The auto button state")
         let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(toggleAutoScan))
@@ -66,7 +76,16 @@ public final class ScannerViewController: UIViewController {
     }()
 
     // MARK: - Life Cycle
-
+    
+    init(canSelectPhoto: Bool) {
+        super.init(nibName: nil, bundle: nil)
+        self.canSelectPhoto = canSelectPhoto
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         
@@ -94,6 +113,7 @@ public final class ScannerViewController: UIViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         
         navigationController?.navigationBar.barStyle = .blackTranslucent
+        if canSelectPhoto { selectPhotoButton.isHidden = false }
     }
     
     override public func viewDidLayoutSubviews() {
@@ -104,6 +124,10 @@ public final class ScannerViewController: UIViewController {
     
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        cleanup()
+    }
+    
+    public func cleanup() {
         UIApplication.shared.isIdleTimerDisabled = false
         
         navigationController?.navigationBar.isTranslucent = false
@@ -125,6 +149,9 @@ public final class ScannerViewController: UIViewController {
         view.addSubview(quadView)
         view.addSubview(cancelButton)
         view.addSubview(shutterButton)
+        if canSelectPhoto {
+            view.addSubview(selectPhotoButton)
+        }
         view.addSubview(activityIndicator)
     }
     
@@ -144,6 +171,7 @@ public final class ScannerViewController: UIViewController {
         var cancelButtonConstraints = [NSLayoutConstraint]()
         var shutterButtonConstraints = [NSLayoutConstraint]()
         var activityIndicatorConstraints = [NSLayoutConstraint]()
+        var selectPhotoButtonConstraints = [NSLayoutConstraint]()
         
         quadViewConstraints = [
             quadView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -164,6 +192,14 @@ public final class ScannerViewController: UIViewController {
         ]
         
         if #available(iOS 11.0, *) {
+            if canSelectPhoto {
+                selectPhotoButtonConstraints = [
+                    selectPhotoButton.widthAnchor.constraint(equalToConstant: 44.0),
+                    selectPhotoButton.heightAnchor.constraint(equalToConstant: 44.0),
+                    selectPhotoButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -24.0),
+                    view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: selectPhotoButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
+                ]
+            }
             cancelButtonConstraints = [
                 cancelButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 24.0),
                 view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
@@ -172,6 +208,14 @@ public final class ScannerViewController: UIViewController {
             let shutterButtonBottomConstraint = view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: shutterButton.bottomAnchor, constant: 8.0)
             shutterButtonConstraints.append(shutterButtonBottomConstraint)
         } else {
+            if canSelectPhoto {
+                selectPhotoButtonConstraints = [
+                    selectPhotoButton.widthAnchor.constraint(equalToConstant: 44.0),
+                    selectPhotoButton.heightAnchor.constraint(equalToConstant: 44.0),
+                    selectPhotoButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -24.0),
+                    view.bottomAnchor.constraint(equalTo: selectPhotoButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
+                ]
+            }
             cancelButtonConstraints = [
                 cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 24.0),
                 view.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
@@ -181,7 +225,7 @@ public final class ScannerViewController: UIViewController {
             shutterButtonConstraints.append(shutterButtonBottomConstraint)
         }
         
-        NSLayoutConstraint.activate(quadViewConstraints + cancelButtonConstraints + shutterButtonConstraints + activityIndicatorConstraints)
+        NSLayoutConstraint.activate(quadViewConstraints + cancelButtonConstraints + selectPhotoButtonConstraints + shutterButtonConstraints + activityIndicatorConstraints)
     }
     
     // MARK: - Tap to Focus
@@ -232,7 +276,7 @@ public final class ScannerViewController: UIViewController {
         captureSessionManager?.capturePhoto()
     }
     
-    @objc private func toggleAutoScan() {
+    @objc public func toggleAutoScan() {
         if CaptureSession.current.isAutoScanEnabled {
             CaptureSession.current.isAutoScanEnabled = false
             autoScanButton.title = NSLocalizedString("wescan.scanning.manual", tableName: nil, bundle: Bundle(for: ScannerViewController.self), value: "Manual", comment: "The manual button state")
@@ -269,6 +313,19 @@ public final class ScannerViewController: UIViewController {
         imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
     }
     
+    @objc private func selectPhoto() {
+        if CaptureSession.current.isAutoScanEnabled {
+            toggleAutoScan()
+        }
+        selectPhotoButton.isHidden = true
+        if let imageScannerController = navigationController as? ImageScannerController {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = imageScannerController
+            imagePicker.sourceType = .photoLibrary
+            imageScannerController.present(imagePicker, animated: true)
+        }
+    }
+    
 }
 
 extension ScannerViewController: RectangleDetectionDelegateProtocol {
@@ -289,6 +346,8 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
     
     func captureSessionManager(_ captureSessionManager: CaptureSessionManager, didCapturePicture picture: UIImage, withQuad quad: Quadrilateral?) {
         activityIndicator.stopAnimating()
+        
+        selectPhotoButton.isHidden = true
         
         let editVC = EditScanViewController(image: picture, quad: quad)
         navigationController?.pushViewController(editVC, animated: false)

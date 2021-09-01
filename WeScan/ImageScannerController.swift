@@ -40,7 +40,9 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
 /// 1. Uses the camera to capture an image with a rectangle that has been detected.
 /// 2. Edit the detected rectangle.
 /// 3. Review the cropped down version of the rectangle.
-public final class ImageScannerController: UINavigationController {
+public final class ImageScannerController: UINavigationController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    private var canSelectPhoto: Bool = false
     
     /// The object that acts as the delegate of the `ImageScannerController`.
     public weak var imageScannerDelegate: ImageScannerControllerDelegate?
@@ -60,8 +62,10 @@ public final class ImageScannerController: UINavigationController {
         return .portrait
     }
     
-    public required init(image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
-        super.init(rootViewController: ScannerViewController())
+    public required init(canSelect: Bool? = false, image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
+        super.init(rootViewController: ScannerViewController(canSelectPhoto: canSelect!))
+        
+        self.canSelectPhoto = canSelect!;
         
         self.imageScannerDelegate = delegate
         
@@ -79,7 +83,7 @@ public final class ImageScannerController: UINavigationController {
             detect(image: image) { [weak self] detectedQuad in
                 guard let self = self else { return }
                 let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
-                self.setViewControllers([editViewController], animated: false)
+                self.setViewControllers([editViewController], animated: true)
             }
         }
     }
@@ -119,13 +123,15 @@ public final class ImageScannerController: UINavigationController {
         
         detect(image: image) { [weak self] detectedQuad in
             guard let self = self else { return }
+            (self.topViewController as! ScannerViewController).cleanup()
+            
             let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
-            self.setViewControllers([editViewController], animated: true)
+            self.setViewControllers([editViewController], animated: false)
         }
     }
     
     public func resetScanner() {
-        setViewControllers([ScannerViewController()], animated: true)
+        setViewControllers([ScannerViewController(canSelectPhoto: canSelectPhoto)], animated: true)
     }
     
     private func setupConstraints() {
@@ -135,7 +141,6 @@ public final class ImageScannerController: UINavigationController {
             view.bottomAnchor.constraint(equalTo: blackFlashView.bottomAnchor),
             view.trailingAnchor.constraint(equalTo: blackFlashView.trailingAnchor)
         ]
-        
         NSLayoutConstraint.activate(blackFlashViewConstraints)
     }
     
@@ -146,6 +151,27 @@ public final class ImageScannerController: UINavigationController {
         DispatchQueue.main.asyncAfter(deadline: flashDuration) {
             self.blackFlashView.isHidden = true
         }
+    }
+
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+        
+        if let scannerVC = topViewController as? ScannerViewController {
+            scannerVC.selectPhotoButton.isHidden = false
+            if !CaptureSession.current.isAutoScanEnabled { scannerVC.toggleAutoScan() }
+        }
+    }
+
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        picker.dismiss(animated: true)
+        
+        if !CaptureSession.current.isAutoScanEnabled &&
+            topViewController is ScannerViewController {
+            (topViewController as! ScannerViewController).toggleAutoScan()
+        }
+        
+        guard let image = info[.originalImage] as? UIImage else { return }
+        useImage(image: image)
     }
 }
 
