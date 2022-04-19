@@ -4,7 +4,7 @@
 //
 //  Created by Boris Emorine on 2/12/18.
 //  Copyright © 2018 WeTransfer. All rights reserved.
-//
+// updated code
 
 import UIKit
 import AVFoundation
@@ -45,7 +45,7 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
     private var canSelectPhoto: Bool = false
     private var shouldOpenEditor: Bool = false
     private var fileName: String = ""
-    
+    private var fromLocalUrl: Bool = false
     /// The object that acts as the delegate of the `ImageScannerController`.
     public weak var imageScannerDelegate: ImageScannerControllerDelegate?
     
@@ -79,6 +79,7 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
             print("imageURL",url)
             let imageData:NSData = NSData(contentsOf: url)!
          let image = UIImage(data: imageData as Data)
+            fromLocalUrl = true
             useImage(image: image!)
         }
         
@@ -156,15 +157,19 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
 //            self.navigationController?.pushViewController(editVC, animated: true)
 //
             
-            
+            print("fromLocalUrl ",self.fromLocalUrl)
             if(self.shouldOpenEditor){
-                let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: false, galleryScan: true)
-                self.setViewControllers([editViewController], animated: false)
+                    let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: self.fromLocalUrl, galleryScan: true)
+                    print("fromLocalUrl if")
+                    self.setViewControllers([editViewController], animated: false)
+
+                self.fromLocalUrl = false
             } else {
-                let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: false)
-                self.pushViewController(editViewController, animated: true)
+                    let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: true)
+                    self.pushViewController(editViewController, animated: true)
+                self.fromLocalUrl = false
             }
-            
+            print("fromLocalUrl ",self.fromLocalUrl)
 //            self.navigationController?.pushViewController(editViewController, animated: true)
 //
         }
