@@ -4,18 +4,18 @@
 
     Created by Boris Emorine on 2/27/18.
     Copyright © 2018 WeTransfer. All rights reserved.
- */
+*/
 
 /* The "Next" button on the right side of the navigation bar on the Edit screen. */
-"wescan.edit.button.next" = "Weiter";
+"wescan.edit.button.next" = "Next";
 
 /* The title on the navigation bar of the Edit screen. */
-"wescan.edit.title" = "Scan editieren";
+"wescan.edit.title" = "";
 
 /* The title on the navigation bar of the Review screen. */
-"wescan.review.title" = "Überprüfen";
+"wescan.review.title" = "Review";
 
 /* The button titles on the Scanning screen. */
-"wescan.scanning.cancel" = "Abbrechen";
+"wescan.scanning.cancel" = "Cancel";
 "wescan.scanning.auto" = "Auto";
-"wescan.scanning.manual" = "Manuell";
+"wescan.scanning.manual" = "Manual";

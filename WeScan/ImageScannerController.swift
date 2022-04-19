@@ -43,6 +43,8 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
 public final class ImageScannerController: UINavigationController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     private var canSelectPhoto: Bool = false
+    private var shouldOpenEditor: Bool = false
+    private var fileName: String = ""
     
     /// The object that acts as the delegate of the `ImageScannerController`.
     public weak var imageScannerDelegate: ImageScannerControllerDelegate?
@@ -62,12 +64,23 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
         return .portrait
     }
     
-    public required init(canSelect: Bool? = false, image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
-        super.init(rootViewController: ScannerViewController(canSelectPhoto: canSelect!))
+    public required init(canSelect: Bool? = false, shouldOpenEditor: Bool? = false, fileName: String? = "" ,image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
+       
         
+        super.init(rootViewController: ScannerViewController(canSelectPhoto: canSelect!))
+        self.shouldOpenEditor = shouldOpenEditor!;
         self.canSelectPhoto = canSelect!;
+        self.fileName = fileName!;
         
         self.imageScannerDelegate = delegate
+        
+        if(self.shouldOpenEditor){
+            let url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(self.fileName)
+            print("imageURL",url)
+            let imageData:NSData = NSData(contentsOf: url)!
+         let image = UIImage(data: imageData as Data)
+            useImage(image: image!)
+        }
         
         if #available(iOS 13.0, *) {
             navigationBar.tintColor = .label
@@ -75,6 +88,7 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
             navigationBar.tintColor = .black
         }
         navigationBar.isTranslucent = false
+        
         self.view.addSubview(blackFlashView)
         setupConstraints()
         
@@ -82,10 +96,23 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
         if let image = image {
             detect(image: image) { [weak self] detectedQuad in
                 guard let self = self else { return }
-                let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
-                self.setViewControllers([editViewController], animated: true)
+//                let editVC = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
+//                self.navigationController?.pushViewController(editVC, animated: true)
+                
+                
+//                self.pushViewController(editViewController, animated: true)
+//                self.setViewControllers([editViewController], animated: true)
+                if(self.shouldOpenEditor){
+                    let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false, galleryScan: true)
+                    self.setViewControllers([editViewController], animated: false)
+                } else {
+                    let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
+                    self.pushViewController(editViewController, animated: true)
+                }
             }
         }
+        
+
     }
 
     override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -125,8 +152,21 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
             guard let self = self else { return }
             (self.topViewController as! ScannerViewController).cleanup()
             
-            let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
-            self.setViewControllers([editViewController], animated: false)
+//            let editVC = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
+//            self.navigationController?.pushViewController(editVC, animated: true)
+//
+            
+            
+            if(self.shouldOpenEditor){
+                let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: false, galleryScan: true)
+                self.setViewControllers([editViewController], animated: false)
+            } else {
+                let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: false)
+                self.pushViewController(editViewController, animated: true)
+            }
+            
+//            self.navigationController?.pushViewController(editViewController, animated: true)
+//
         }
     }
     
@@ -154,8 +194,12 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
     }
 
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        if(self.shouldOpenEditor){
+            self.dismiss(animated: true, completion: nil)
+            navigationController?.popViewController(animated: true)
+            dismiss(animated: true, completion: nil)
+        }
         picker.dismiss(animated: true)
-        
         if let scannerVC = topViewController as? ScannerViewController {
             scannerVC.selectPhotoButton.isHidden = false
             if !CaptureSession.current.isAutoScanEnabled { scannerVC.toggleAutoScan() }
@@ -163,13 +207,13 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
     }
 
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        picker.dismiss(animated: true)
+        picker.dismiss(animated: false)
         
         if !CaptureSession.current.isAutoScanEnabled &&
             topViewController is ScannerViewController {
             (topViewController as! ScannerViewController).toggleAutoScan()
         }
-        
+//        print(info[.originalImage])
         guard let image = info[.originalImage] as? UIImage else { return }
         useImage(image: image)
     }

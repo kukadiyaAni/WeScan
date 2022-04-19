@@ -1,4 +1,4 @@
-/* 
+/*
     localizable.strings
     WeScanSampleProject
 
@@ -7,15 +7,15 @@
 */
 
 /* The "Next" button on the right side of the navigation bar on the Edit screen. */
-"wescan.edit.button.next" = "다음";
+"wescan.edit.button.next" = "Next";
 
 /* The title on the navigation bar of the Edit screen. */
-"wescan.edit.title" = "스캔 수정";
+"wescan.edit.title" = "";
 
 /* The title on the navigation bar of the Review screen. */
-"wescan.review.title" = "검토";
+"wescan.review.title" = "Review";
 
 /* The button titles on the Scanning screen. */
-"wescan.scanning.cancel" = "취소";
-"wescan.scanning.auto" = "자동";
-"wescan.scanning.manual" = "수동";
+"wescan.scanning.cancel" = "Cancel";
+"wescan.scanning.auto" = "Auto";
+"wescan.scanning.manual" = "Manual";

@@ -9,8 +9,9 @@
 import UIKit
 import AVFoundation
 
+
 /// The `EditScanViewController` offers an interface for the user to edit the detected quadrilateral.
-final class EditScanViewController: UIViewController {
+public final class EditScanViewController: UIViewController {
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -31,16 +32,24 @@ final class EditScanViewController: UIViewController {
     }()
     
     private lazy var nextButton: UIBarButtonItem = {
-        let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
-        let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(pushReviewController))
-        button.tintColor = navigationController?.navigationBar.tintColor
+//        let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
+        let button = UIBarButtonItem(title: "Keep", style: .plain, target: self, action: #selector(pushReviewController))
+        button.tintColor = .systemBlue
+//        button.tintColor = UIColor(displayP3Red: 48, green: 103, blue: 255, alpha: 1)
         return button
     }()
     
     private lazy var cancelButton: UIBarButtonItem = {
-        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
-        let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(cancelButtonTapped))
-        button.tintColor = navigationController?.navigationBar.tintColor
+//        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
+        let button = UIBarButtonItem(title: "Cancel", style: .plain,  target: self, action: #selector(cancelButtonTapped) )
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
+    private lazy var retakeButton: UIBarButtonItem = {
+//        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
+        let button = UIBarButtonItem(title: "Retake", style: .plain,  target: self, action: #selector(retakeButtonTapped) )
+        button.tintColor = .systemBlue
         return button
     }()
     
@@ -51,16 +60,18 @@ final class EditScanViewController: UIViewController {
     private var quad: Quadrilateral
     
     private var zoomGestureController: ZoomGestureController!
-    
+    private var galleryScan: Bool = false
     private var quadViewWidthConstraint = NSLayoutConstraint()
     private var quadViewHeightConstraint = NSLayoutConstraint()
     
     // MARK: - Life Cycle
     
-    init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true) {
+    init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = true, galleryScan: Bool? = false) {
         self.image = rotateImage ? image.applyingPortraitOrientation() : image
-        self.quad = quad ?? EditScanViewController.defaultQuad(forImage: image)
+        self.quad = quad ?? EditScanViewController.defaultQuad(forImage: rotateImage ? image.applyingPortraitOrientation() : image)
+        self.galleryScan = galleryScan!;
         super.init(nibName: nil, bundle: nil)
+        setupToolbar()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -72,13 +83,16 @@ final class EditScanViewController: UIViewController {
         
         setupViews()
         setupConstraints()
-        title = NSLocalizedString("wescan.edit.title", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Edit Scan", comment: "The title of the EditScanViewController")
-        navigationItem.rightBarButtonItem = nextButton
-        if let firstVC = self.navigationController?.viewControllers.first, firstVC == self {
-            navigationItem.leftBarButtonItem = cancelButton
-        } else {
-            navigationItem.leftBarButtonItem = nil
-        }
+//        title = NSLocalizedString("wescan.edit.title", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Edit Scan", comment: "The title of the EditScanViewController")
+//        navigationItem.rightBarButtonItem = nextButton
+        navigationController?.navigationBar.backgroundColor = .black
+        navigationItem.titleView?.backgroundColor = .black
+//        if let firstVC = self.navigationController?.viewControllers.first, firstVC == self {
+//
+//            navigationItem.leftBarButtonItem = cancelButton
+//        } else {
+//            navigationItem.leftBarButtonItem = cancelButton
+//        }
         
         zoomGestureController = ZoomGestureController(image: image, quadView: quadView)
         
@@ -87,18 +101,39 @@ final class EditScanViewController: UIViewController {
         view.addGestureRecognizer(touchDown)
     }
     
+    private func setupToolbar() {
+               
+        //        navigationController?.toolbar.barStyle = .default
+        navigationController?.toolbar.backgroundColor = .black
+        let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        print("self.galleryScanself.galleryScan",self.galleryScan)
+        if(self.galleryScan){
+            toolbarItems = [fixedSpace,cancelButton,flexibleSpace,nextButton, fixedSpace]
+        } else {
+            toolbarItems = [fixedSpace,retakeButton, flexibleSpace,nextButton, fixedSpace]
+        }
+        
+        
+//        navigationController?.setToolbarHidden(false, animated: true)
+    }
+    
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         adjustQuadViewConstraints()
         displayQuad()
+        setupToolbar()
+        navigationController?.setToolbarHidden(false, animated: true)
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
+        navigationController?.setToolbarHidden(true, animated: true)
         super.viewWillDisappear(animated)
-        
+       
         // Work around for an iOS 11.2 bug where UIBarButtonItems don't get back to their normal state after being pressed.
         navigationController?.navigationBar.tintAdjustmentMode = .normal
         navigationController?.navigationBar.tintAdjustmentMode = .automatic
+        
     }
     
     // MARK: - Setups
@@ -129,12 +164,18 @@ final class EditScanViewController: UIViewController {
         NSLayoutConstraint.activate(quadViewConstraints + imageViewConstraints)
     }
     
-    // MARK: - Actions
+    
+    //  MARK: - Actions
     @objc func cancelButtonTapped() {
         if let imageScannerController = navigationController as? ImageScannerController {
             imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
         }
     }
+    
+    @objc func retakeButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     
     @objc func pushReviewController() {
         guard let quad = quadView.quad,

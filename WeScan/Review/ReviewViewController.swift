@@ -14,6 +14,7 @@ final class ReviewViewController: UIViewController {
     private var rotationAngle = Measurement<UnitAngle>(value: 0, unit: .degrees)
     private var enhancedImageIsAvailable = false
     private var isCurrentlyDisplayingEnhancedImage = false
+    private var isShare = false
     
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -26,25 +27,49 @@ final class ReviewViewController: UIViewController {
         return imageView
     }()
     
+    
+    
+    
     private lazy var enhanceButton: UIBarButtonItem = {
-        let image = UIImage(systemName: "wand.and.rays.inverse", named: "enhance", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let image = UIImage(  named: "ic_disc", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(toggleEnhancedImage))
-        button.tintColor = .white
+        button.tintColor = .systemBlue
         return button
     }()
     
     private lazy var rotateButton: UIBarButtonItem = {
-        let image = UIImage(systemName: "rotate.right", named: "rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let image = UIImage(  named: "ic_rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(rotateImage))
-        button.tintColor = .white
+        button.tintColor = .systemBlue
         return button
     }()
     
     private lazy var doneButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(finishScan))
-        button.tintColor = navigationController?.navigationBar.tintColor
+        let image = UIImage(  named: "zdc_tick_icon", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain,target: self, action: #selector(finishScan))
+        button.tintColor = .systemBlue
         return button
     }()
+    
+    
+    private lazy var deleteButton: UIBarButtonItem = {
+        let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(deleteImageController))
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
+    private lazy var shareButton: UIBarButtonItem = {
+        let image = UIImage(named: "ic_share", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(shareImageButton))
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
+    @objc private func shareImageButton() {
+        isShare = true
+        finishScan()
+    }
     
     private let results: ImageScannerResults
     
@@ -61,6 +86,7 @@ final class ReviewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
 
         enhancedImageIsAvailable = results.enhancedScan != nil
         
@@ -69,16 +95,28 @@ final class ReviewViewController: UIViewController {
         setupConstraints()
         
         title = NSLocalizedString("wescan.review.title", tableName: nil, bundle: Bundle(for: ReviewViewController.self), value: "Review", comment: "The review title of the ReviewController")
-        navigationItem.rightBarButtonItem = doneButton
+//        navigationItem.rightBarButtonItem = doneButton
+        //        navigationItem.leftBarButtonItem = deleteButton
+//        navigationController?.navigationBar.backgroundColor = .black
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+
         // We only show the toolbar (with the enhance button) if the enhanced image is available.
         if enhancedImageIsAvailable {
             navigationController?.setToolbarHidden(false, animated: true)
         }
+    }
+    
+    @objc private func cancelImageScannerController() {
+        guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
+    }
+    
+    @objc private func deleteImageController() {
+        navigationController?.popViewController(animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -95,11 +133,13 @@ final class ReviewViewController: UIViewController {
     private func setupToolbar() {
         guard enhancedImageIsAvailable else { return }
         
-        navigationController?.toolbar.barStyle = .blackTranslucent
+        //        navigationController?.toolbar.barStyle = .default
+        navigationController?.toolbar.backgroundColor = .black
+        
         
         let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbarItems = [fixedSpace, enhanceButton, flexibleSpace, rotateButton, fixedSpace]
+        toolbarItems = [fixedSpace,shareButton, flexibleSpace,enhanceButton, flexibleSpace,doneButton,flexibleSpace,rotateButton,flexibleSpace,deleteButton, fixedSpace]
     }
     
     private func setupConstraints() {
@@ -140,11 +180,11 @@ final class ReviewViewController: UIViewController {
         
         isCurrentlyDisplayingEnhancedImage.toggle()
         reloadImage()
-      
+        
         if isCurrentlyDisplayingEnhancedImage {
-            enhanceButton.tintColor = .yellow
+            enhanceButton.tintColor = .systemBlue
         } else {
-            enhanceButton.tintColor = .white
+            enhanceButton.tintColor = .systemBlue
         }
     }
     
@@ -165,7 +205,26 @@ final class ReviewViewController: UIViewController {
         newResults.croppedScan.rotate(by: rotationAngle)
         newResults.enhancedScan?.rotate(by: rotationAngle)
         newResults.doesUserPreferEnhancedScan = isCurrentlyDisplayingEnhancedImage
-        imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
+        if(isShare){
+            isShare = false
+            
+            if(isCurrentlyDisplayingEnhancedImage){
+                let image = newResults.enhancedScan?.image
+                let imageShare = [ image! ]
+                let activityViewController = UIActivityViewController(activityItems: imageShare , applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = self.view
+                self.present(activityViewController, animated: true, completion: nil)
+            } else {
+                let image = newResults.croppedScan.image
+                let imageShare = [ image ]
+                let activityViewController = UIActivityViewController(activityItems: imageShare , applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = self.view
+                self.present(activityViewController, animated: true, completion: nil)
+            }
+            
+        } else {
+            imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
+        }
     }
-
+    
 }

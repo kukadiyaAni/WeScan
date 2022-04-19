@@ -1,21 +1,21 @@
-/* 
+/*
     localizable.strings
     WeScanSampleProject
 
-    Created by Ola Nilsson on 12/8/20.
-    Copyright © 2020 WeTransfer. All rights reserved.
+    Created by Boris Emorine on 2/27/18.
+    Copyright © 2018 WeTransfer. All rights reserved.
 */
 
 /* The "Next" button on the right side of the navigation bar on the Edit screen. */
-"wescan.edit.button.next" = "Nästa";
+"wescan.edit.button.next" = "Next";
 
 /* The title on the navigation bar of the Edit screen. */
-"wescan.edit.title" = "Redigera";
+"wescan.edit.title" = "";
 
 /* The title on the navigation bar of the Review screen. */
-"wescan.review.title" = "Granska";
+"wescan.review.title" = "Review";
 
 /* The button titles on the Scanning screen. */
-"wescan.scanning.cancel" = "Avbryt";
-"wescan.scanning.auto" = "Automatisk";
-"wescan.scanning.manual" = "Manuell";
+"wescan.scanning.cancel" = "Cancel";
+"wescan.scanning.auto" = "Auto";
+"wescan.scanning.manual" = "Manual";

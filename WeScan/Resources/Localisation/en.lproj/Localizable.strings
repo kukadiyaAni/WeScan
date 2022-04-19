@@ -1,4 +1,4 @@
-/* 
+/*
     localizable.strings
     WeScanSampleProject
 
@@ -10,7 +10,7 @@
 "wescan.edit.button.next" = "Next";
 
 /* The title on the navigation bar of the Edit screen. */
-"wescan.edit.title" = "Edit Scan";
+"wescan.edit.title" = "";
 
 /* The title on the navigation bar of the Review screen. */
 "wescan.review.title" = "Review";

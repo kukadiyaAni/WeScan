@@ -1,4 +1,4 @@
-/* 
+/*
     localizable.strings
     WeScanSampleProject
 
@@ -7,15 +7,15 @@
 */
 
 /* The "Next" button on the right side of the navigation bar on the Edit screen. */
-"wescan.edit.button.next" = "下一步";
+"wescan.edit.button.next" = "Next";
 
 /* The title on the navigation bar of the Edit screen. */
-"wescan.edit.title" = "编辑";
+"wescan.edit.title" = "";
 
 /* The title on the navigation bar of the Review screen. */
-"wescan.review.title" = "回顾";
+"wescan.review.title" = "Review";
 
 /* The button titles on the Scanning screen. */
-"wescan.scanning.cancel" = "取消";
-"wescan.scanning.auto" = "自动";
-"wescan.scanning.manual" = "手动";
+"wescan.scanning.cancel" = "Cancel";
+"wescan.scanning.auto" = "Auto";
+"wescan.scanning.manual" = "Manual";

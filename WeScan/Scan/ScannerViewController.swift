@@ -87,6 +87,7 @@ public final class ScannerViewController: UIViewController {
     }
     
     override public func viewDidLoad() {
+        
         super.viewDidLoad()
         
         title = nil
@@ -95,15 +96,25 @@ public final class ScannerViewController: UIViewController {
         setupViews()
         setupNavigationBar()
         setupConstraints()
+//        if(RNScannerManager.openGallery){
         
+
+//        selectPhoto()
+//        }
         captureSessionManager = CaptureSessionManager(videoPreviewLayer: videoPreviewLayer, delegate: self)
         
         originalBarStyle = navigationController?.navigationBar.barStyle
-        
+        navigationController?.navigationBar.backgroundColor = .black
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
     }
     
+  @objc func openGallery (){
+      print("openGalleryopenGallery called")
+//        selectPhoto()
+    }
+        
     override public func viewWillAppear(_ animated: Bool) {
+    
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
         
@@ -113,7 +124,6 @@ public final class ScannerViewController: UIViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         
         navigationController?.navigationBar.barStyle = .blackTranslucent
-        if canSelectPhoto { selectPhotoButton.isHidden = false }
     }
     
     override public func viewDidLayoutSubviews() {
@@ -143,6 +153,7 @@ public final class ScannerViewController: UIViewController {
     
     private func setupViews() {
         view.backgroundColor = .darkGray
+        
         view.layer.addSublayer(videoPreviewLayer)
         quadView.translatesAutoresizingMaskIntoConstraints = false
         quadView.editable = false
@@ -317,7 +328,7 @@ public final class ScannerViewController: UIViewController {
         if CaptureSession.current.isAutoScanEnabled {
             toggleAutoScan()
         }
-        selectPhotoButton.isHidden = true
+//        selectPhotoButton.isHidden = true
         if let imageScannerController = navigationController as? ImageScannerController {
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = imageScannerController
@@ -346,11 +357,10 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
     
     func captureSessionManager(_ captureSessionManager: CaptureSessionManager, didCapturePicture picture: UIImage, withQuad quad: Quadrilateral?) {
         activityIndicator.stopAnimating()
-        
-        selectPhotoButton.isHidden = true
+//        selectPhotoButton.isHidden = true
         
         let editVC = EditScanViewController(image: picture, quad: quad)
-        navigationController?.pushViewController(editVC, animated: false)
+        navigationController?.pushViewController(editVC, animated: true)
         
         shutterButton.isUserInteractionEnabled = true
     }
