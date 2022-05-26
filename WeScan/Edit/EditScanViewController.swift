@@ -104,16 +104,20 @@ public final class EditScanViewController: UIViewController {
     private func setupToolbar() {
                
         //        navigationController?.toolbar.barStyle = .default
-        navigationController?.toolbar.backgroundColor = .black
-        let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        print("self.galleryScanself.galleryScan",self.galleryScan)
+//        navigationController?.toolbar.backgroundColor = .black
+        navigationController?.setToolbarHidden(true, animated: false)
+//        let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+//        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+//        print("self.galleryScanself.galleryScan",self.galleryScan)
+        navigationItem.rightBarButtonItem = nextButton
         if(self.galleryScan){
-            toolbarItems = [fixedSpace,cancelButton,flexibleSpace,nextButton, fixedSpace]
+            navigationItem.leftBarButtonItem = cancelButton
+//            toolbarItems = [fixedSpace,cancelButton,flexibleSpace,nextButton, fixedSpace]
         } else {
-            toolbarItems = [fixedSpace,retakeButton, flexibleSpace,nextButton, fixedSpace]
+            navigationItem.leftBarButtonItem = retakeButton
+//            toolbarItems = [fixedSpace,retakeButton, flexibleSpace,nextButton, fixedSpace]
         }
-        
+//        navigationController?.setNavigationBarHidden(false, animated: false)
         
 //        navigationController?.setToolbarHidden(false, animated: true)
     }
@@ -123,7 +127,7 @@ public final class EditScanViewController: UIViewController {
         adjustQuadViewConstraints()
         displayQuad()
         setupToolbar()
-        navigationController?.setToolbarHidden(false, animated: true)
+//        navigationController?.setToolbarHidden(false, animated: true)
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -143,11 +147,20 @@ public final class EditScanViewController: UIViewController {
         view.addSubview(quadView)
     }
     
+    var hasTopNotch: Bool {
+        if #available(iOS 13.0,  *) {
+            return UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.top ?? 0 > 20
+        }else{
+         return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
+        }
+    }
+    
+    
     private func setupConstraints() {
         let imageViewConstraints = [
             imageView.topAnchor.constraint(equalTo: view.topAnchor),
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
+            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: hasTopNotch ? 34 : 0),
             view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
         ]
         
@@ -156,7 +169,7 @@ public final class EditScanViewController: UIViewController {
         
         let quadViewConstraints = [
             quadView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            quadView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            quadView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: hasTopNotch ? -17 : 0),
             quadViewWidthConstraint,
             quadViewHeightConstraint
         ]
