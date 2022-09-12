@@ -150,7 +150,7 @@ final class ReviewViewController: UIViewController {
             imageViewConstraints = [
                 view.safeAreaLayoutGuide.topAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.topAnchor),
                 view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.trailingAnchor),
-                view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.bottomAnchor),
+                view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 26),
                 view.safeAreaLayoutGuide.leadingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.leadingAnchor)
             ]
         } else {
