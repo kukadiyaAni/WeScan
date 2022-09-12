@@ -165,7 +165,7 @@ public final class EditScanViewController: UIViewController {
         let imageViewConstraints = [
             imageView.topAnchor.constraint(equalTo: view.topAnchor),
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: hasTopNotch ? 34 : 0),
+            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: hasTopNotch ? 26 : 0),
             view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
         ]
         
