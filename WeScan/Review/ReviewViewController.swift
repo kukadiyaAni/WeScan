@@ -70,6 +70,7 @@ final class ReviewViewController: UIViewController {
         
         title = NSLocalizedString("wescan.review.title", tableName: nil, bundle: Bundle(for: ReviewViewController.self), value: "Review", comment: "The review title of the ReviewController")
         navigationItem.rightBarButtonItem = doneButton
+        self.view.backgroundColor = .black
     }
     
     override func viewWillAppear(_ animated: Bool) {
