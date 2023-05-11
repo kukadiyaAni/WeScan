@@ -326,11 +326,12 @@ public final class EditScanViewController: UIViewController {
     }
     
     
-    private func setupConstraints() {
+   private func setupConstraints() {
+        let size = hasTopNotch ? bottomNotchHeight+60 : 60
         let imageViewConstraints = [
             imageView.topAnchor.constraint(equalTo: view.topAnchor),
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: hasTopNotch ? bottomNotchHeight : 0),
+            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: size),
             view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
         ]
         
@@ -339,7 +340,7 @@ public final class EditScanViewController: UIViewController {
         
         let quadViewConstraints = [
             quadView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            quadView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: hasTopNotch ? -17 : 0),
+            quadView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: -(size/2)),
             quadViewWidthConstraint,
             quadViewHeightConstraint
         ]
