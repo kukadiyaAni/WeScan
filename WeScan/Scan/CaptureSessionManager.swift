@@ -2,7 +2,7 @@
 //  CaptureManager.swift
 //  WeScan
 //
-//  Created by Boris Emorine on 2/8/18.
+//  Created by Aniruddh Kukadiya on 1/1/2024.
 //  Copyright © 2018 WeTransfer. All rights reserved.
 //
 
@@ -167,6 +167,23 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
+        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
+        if device.hasTorch {
+            // Set flash mode based on torch mode
+            switch device.torchMode {
+            case .on:
+                photoSettings.flashMode = .on
+            case .off:
+                photoSettings.flashMode = .off
+            case .auto:
+                photoSettings.flashMode = .auto
+            default:
+                photoSettings.flashMode = .off
+            }
+        } else {
+            print("Torch is not supported on this device")
+        }
+        
         photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
