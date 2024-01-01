@@ -2,7 +2,7 @@
 //  ScannerViewController.swift
 //  WeScan
 //
-//  Created by Boris Emorine on 2/8/18.
+//  Update by Aniruddh Kukadiya on 1/1/2024.
 //  Copyright © 2018 WeTransfer. All rights reserved.
 //
 
@@ -61,7 +61,7 @@ public final class ScannerViewController: UIViewController {
     }()
     
     private lazy var flashButton: UIBarButtonItem = {
-        let image = UIImage(systemName: "bolt.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let image = UIImage(systemName: "bolt.slash.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(toggleFlash))
         button.tintColor = .white
         
@@ -143,10 +143,24 @@ public final class ScannerViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = originalBarStyle ?? .default
         captureSessionManager?.stop()
+        resetFlase()
+    }
+    @objc private func resetFlase() {
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
-        if device.torchMode == .on {
-            toggleFlash()
+        do {
+            try device.lockForConfiguration()
+            
+            device.torchMode = .off
+            device.unlockForConfiguration()
+            
+            let flashOff = UIImage( systemName: "bolt.slash.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+            flashButton.image = flashOff
+            flashButton.tintColor = .white
+            
+        }catch{
+            
         }
+        
     }
     
     // MARK: - Setups
@@ -297,26 +311,64 @@ public final class ScannerViewController: UIViewController {
         }
     }
     
+    
     @objc private func toggleFlash() {
-        let state = CaptureSession.current.toggleFlash()
         
-        let flashImage = UIImage(systemName: "bolt.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let flashOffImage = UIImage(systemName: "bolt.slash.fill", named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        
-        switch state {
-        case .on:
-            flashEnabled = true
-            flashButton.image = flashImage
-            flashButton.tintColor = .yellow
-        case .off:
-            flashEnabled = false
-            flashButton.image = flashImage
-            flashButton.tintColor = .white
-        case .unknown, .unavailable:
-            flashEnabled = false
-            flashButton.image = flashOffImage
-            flashButton.tintColor = UIColor.lightGray
+        do {
+            guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
+            
+            if device.hasTorch {
+                try device.lockForConfiguration()
+                switch device.torchMode {
+                case .on:
+                    device.torchMode = .auto
+                case .off:
+                    device.torchMode = .on
+                case .auto:
+                    device.torchMode = .off
+                default :
+                    device.torchMode = .off
+                }
+                
+                // Set flash mode based on torch mode
+               
+                device.unlockForConfiguration()
+                let flash = UIImage( systemName: "bolt.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+                
+                let flashOff = UIImage( systemName: "bolt.slash.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+                
+                let flashAuto = UIImage( systemName: "bolt.badge.automatic.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+                
+                let flashOffImage = UIImage(systemName: "bolt.slash.fill", named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+                
+                switch device.torchMode {
+                case .on:
+                    flashButton.image = flash
+                    flashButton.tintColor = .white
+                case .off:
+                    flashButton.image = flashOff
+                    flashButton.tintColor = .white
+                case .auto:
+                    flashButton.image = flashAuto
+                    flashButton.tintColor = .white
+                default :
+                    flashButton.image = flashOffImage
+                    flashButton.tintColor = UIColor.lightGray
+                }
+                
+            } else {
+                print("Torch is not supported on this device")
+            }
+            
+        } catch {
+            // Handle configuration error
+            print("Error configuring torch: \(error.localizedDescription)")
         }
+//        let state = CaptureSession.current.toggleFlash()
+//        
+//
+//        
+//
     }
     
     @objc private func cancelImageScannerController() {
