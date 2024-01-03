@@ -2,8 +2,8 @@
 //  ImageScannerController.swift
 //  WeScan
 //
-//  Created by Boris Emorine on 2/12/18.
-//  Copyright © 2018 WeTransfer. All rights reserved.
+//  Update by Aniruddh Kukadiya on 3 Jan 2024.
+//  Copyright © 2018 Ani. All rights reserved.
 // updated code
 
 import UIKit
@@ -78,7 +78,7 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
             let url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(self.fileName)
             print("imageURL",url)
             let imageData:NSData = NSData(contentsOf: url)!
-         let image = UIImage(data: imageData as Data)
+            let image = UIImage(data: imageData as Data)
             fromLocalUrl = true
             useImage(image: image!)
         }
@@ -104,6 +104,7 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
 //                self.pushViewController(editViewController, animated: true)
 //                self.setViewControllers([editViewController], animated: true)
                 if(self.shouldOpenEditor){
+                    
                     let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false, galleryScan: true)
                     self.setViewControllers([editViewController], animated: false)
                 } else {
@@ -159,9 +160,13 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
             
             print("fromLocalUrl ",self.fromLocalUrl)
             if(self.shouldOpenEditor){
-                    let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: self.fromLocalUrl, galleryScan: true)
-                    print("fromLocalUrl if")
-                    self.setViewControllers([editViewController], animated: false)
+                let orientation = CGImagePropertyOrientation(image.imageOrientation)
+                if (orientation == CGImagePropertyOrientation.right){
+                    self.fromLocalUrl = false
+                }
+                let editViewController = EditScanViewController(image: image.applyingPortraitOrientation(), quad: detectedQuad, rotateImage: self.fromLocalUrl, galleryScan: true)
+                print("fromLocalUrl if")
+                self.setViewControllers([editViewController], animated: false)
 
                 self.fromLocalUrl = false
             } else {
@@ -269,16 +274,16 @@ public struct ImageScannerResults {
     /// The detected rectangle which was used to generate the `scannedImage`.
     public var detectedRectangle: Quadrilateral
     
-    @available(*, unavailable, renamed: "originalScan")
+//    @available(*, unavailable, renamed: "originalScan")
     public var originalImage: UIImage?
     
-    @available(*, unavailable, renamed: "croppedScan")
+//    @available(*, unavailable, renamed: "croppedScan")
     public var scannedImage: UIImage?
     
-    @available(*, unavailable, renamed: "enhancedScan")
+//    @available(*, unavailable, renamed: "enhancedScan")
     public var enhancedImage: UIImage?
     
-    @available(*, unavailable, renamed: "doesUserPreferEnhancedScan")
+//    @available(*, unavailable, renamed: "doesUserPreferEnhancedScan")
     public var doesUserPreferEnhancedImage: Bool = false
     
     init(detectedRectangle: Quadrilateral, originalScan: ImageScannerScan, croppedScan: ImageScannerScan, enhancedScan: ImageScannerScan?, doesUserPreferEnhancedScan: Bool = false) {
