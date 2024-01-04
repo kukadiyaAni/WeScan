@@ -2,8 +2,8 @@
 //  ScannerViewController.swift
 //  WeScan
 //
-//  Update by Aniruddh Kukadiya on 1/1/2024.
-//  Copyright © 2018 WeTransfer. All rights reserved.
+//  Created by Boris Emorine on 2/8/18.
+//  Copyright © 2018 Ani. All rights reserved.
 //
 
 import UIKit
@@ -35,11 +35,13 @@ public final class ScannerViewController: UIViewController {
         return button
     }()
     
-    private lazy var cancelButton: UIButton = {
+    
+    private lazy var flashButton: UIButton = {
         let button = UIButton()
-        button.setTitle(NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: ScannerViewController.self), value: "Cancel", comment: "The cancel button"), for: .normal)
+        button.setImage(UIImage(systemName: "bolt.slash.fill", named: "gallery", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor.white
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(cancelImageScannerController), for: .touchUpInside)
+        button.addTarget(self, action: #selector(toggleFlash), for: .touchUpInside)
         return button
     }()
     
@@ -59,10 +61,9 @@ public final class ScannerViewController: UIViewController {
         
         return button
     }()
-    
-    private lazy var flashButton: UIBarButtonItem = {
-        let image = UIImage(systemName: "bolt.slash.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(toggleFlash))
+        private lazy var cancelButton: UIBarButtonItem = {
+        let image = UIImage(systemName: "house.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(cancelImageScannerController))
         button.tintColor = .white
         
         return button
@@ -154,7 +155,7 @@ public final class ScannerViewController: UIViewController {
             device.unlockForConfiguration()
             
             let flashOff = UIImage( systemName: "bolt.slash.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-            flashButton.image = flashOff
+            flashButton.setImage(flashOff, for: .normal)
             flashButton.tintColor = .white
             
         }catch{
@@ -172,7 +173,7 @@ public final class ScannerViewController: UIViewController {
         quadView.translatesAutoresizingMaskIntoConstraints = false
         quadView.editable = false
         view.addSubview(quadView)
-        view.addSubview(cancelButton)
+        view.addSubview(flashButton)
         view.addSubview(shutterButton)
         if canSelectPhoto {
             view.addSubview(selectPhotoButton)
@@ -181,13 +182,13 @@ public final class ScannerViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.setLeftBarButton(flashButton, animated: false)
+        navigationItem.setLeftBarButton(cancelButton, animated: false)
         navigationItem.setRightBarButton(autoScanButton, animated: false)
         
         if UIImagePickerController.isFlashAvailable(for: .rear) == false {
-            let flashOffImage = UIImage(systemName: "bolt.slash.fill", named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-            flashButton.image = flashOffImage
-            flashButton.tintColor = UIColor.lightGray
+            let houseImage = UIImage(systemName: "house.fill", named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+            cancelButton.image = houseImage
+            cancelButton.tintColor = UIColor.lightGray
         }
     }
     
@@ -226,8 +227,8 @@ public final class ScannerViewController: UIViewController {
                 ]
             }
             cancelButtonConstraints = [
-                cancelButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 24.0),
-                view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
+                flashButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 24.0),
+                view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: flashButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
             ]
             
             let shutterButtonBottomConstraint = view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: shutterButton.bottomAnchor, constant: 8.0)
@@ -242,8 +243,8 @@ public final class ScannerViewController: UIViewController {
                 ]
             }
             cancelButtonConstraints = [
-                cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 24.0),
-                view.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
+                flashButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 24.0),
+                view.bottomAnchor.constraint(equalTo: flashButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
             ]
             
             let shutterButtonBottomConstraint = view.bottomAnchor.constraint(equalTo: shutterButton.bottomAnchor, constant: 8.0)
@@ -343,16 +344,16 @@ public final class ScannerViewController: UIViewController {
                 
                 switch device.torchMode {
                 case .on:
-                    flashButton.image = flash
+                    flashButton.setImage(flash, for: .normal)
                     flashButton.tintColor = .white
                 case .off:
-                    flashButton.image = flashOff
+                    flashButton.setImage(flashOff, for: .normal)
                     flashButton.tintColor = .white
                 case .auto:
-                    flashButton.image = flashAuto
+                    flashButton.setImage(flashAuto, for: .normal)
                     flashButton.tintColor = .white
                 default :
-                    flashButton.image = flashOffImage
+                    flashButton.setImage(flashOffImage, for: .normal)
                     flashButton.tintColor = UIColor.lightGray
                 }
                 
