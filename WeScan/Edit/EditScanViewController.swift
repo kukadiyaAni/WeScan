@@ -2,8 +2,8 @@
 //  EditScanViewController.swift
 //  WeScan
 //
-//  Created by Aniruddh kukadiya on 2/12/18.
-//  Copyright © 2018 Ani. All rights reserved.
+//  Created by Boris Emorine on 2/12/18.
+//  Copyright © 2018 WeTransfer. All rights reserved.
 //
 
 import UIKit
@@ -26,6 +26,7 @@ public final class EditScanViewController: UIViewController {
     private var enhancedImageIsAvailable = false
     private var isCurrentlyDisplayingEnhancedImage = false
     private var isShare = false
+    private var isKeepScanning = false
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -415,11 +416,12 @@ public final class EditScanViewController: UIViewController {
     
     private lazy var keepScaning: UIButton = {
         let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
-        button.setTitle("Keep scanning", for: .normal)
+        button.setTitle(galleryScan ? "" : "Keep scanning", for: .normal)
         let hexColor: UInt32 = 0xB1B1B1
         let textColor = UIColor(hex: hexColor)
         button.setTitleColor(textColor, for: .normal)
         button.titleLabel?.font = UIFont(name: "SFProText-Regular", size: 19.0)
+        button.addTarget(self, action:#selector(keepScanningDcouments), for: .touchUpInside)
 
 //        button.setTitleColor(UIColor(rgb: "0xB1B1B1"), for: .normal)
 
@@ -430,7 +432,11 @@ public final class EditScanViewController: UIViewController {
         let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
         button.setTitle("", for: .normal)
-        button.setTitleColor(UIColor(named: "#000000"), for: .normal)
+        if #available(iOS 11.0, *) {
+            button.setTitleColor(UIColor(named: "#000000"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
 
         return button
     }()
@@ -438,6 +444,7 @@ public final class EditScanViewController: UIViewController {
     private lazy var continueButton: UIButton = {
         let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
         button.setTitle("Continue", for: .normal)
+        button.showsTouchWhenHighlighted = true
         button.titleLabel?.font = UIFont(name: "SFProText-Regular", size: 19.0)
         let hexColor: UInt32 = 0x3067FF
         let backgroundColor = UIColor(hex: hexColor)
@@ -445,7 +452,7 @@ public final class EditScanViewController: UIViewController {
         button.layer.cornerRadius = 5.0
         button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         
-        button.addTarget(self, action:#selector(finishScan), for: .touchUpInside)
+        button.addTarget(self, action:#selector(finishScan), for: .touchDown)
 
         return button
     }()
@@ -644,8 +651,6 @@ public final class EditScanViewController: UIViewController {
         
         let results = ImageScannerResults(detectedRectangle: self.quad, originalScan: ImageScannerScan(image: image), croppedScan: ImageScannerScan(image: croppedImage), enhancedScan: enhancedScan)
         
-        print("isCurrentlyDisplayingEnhancedImage", isCurrentlyDisplayingEnhancedImage)
-        
         if isCurrentlyDisplayingEnhancedImage {
             imageView.image =  results.enhancedScan?.image
         } else {
@@ -685,6 +690,7 @@ public final class EditScanViewController: UIViewController {
     }
     
     @objc private func finishScan() {
+        
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
         
         guard let quad = quadView.quad,
@@ -720,6 +726,7 @@ public final class EditScanViewController: UIViewController {
         
         var newResults = results
         newResults.doesUserPreferEnhancedScan = isCurrentlyDisplayingEnhancedImage
+        newResults.isKeepScannning = false
         if(isShare){
             isShare = false
 
@@ -740,6 +747,49 @@ public final class EditScanViewController: UIViewController {
         } else {
             imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
         }
+    }
+    
+    @objc private func keepScanningDcouments() {
+        
+        guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        
+        guard let quad = quadView.quad,
+            let ciImage = CIImage(image: image) else {
+                if let imageScannerController = navigationController as? ImageScannerController {
+                    let error = ImageScannerControllerError.ciImageCreation
+                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+                }
+                return
+        }
+        let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
+        let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
+        let scaledQuad = quad.scale(quadView.bounds.size, image.size)
+        self.quad = scaledQuad
+        
+        // Cropped Image
+        var cartesianScaledQuad = scaledQuad.toCartesian(withHeight: image.size.height)
+        cartesianScaledQuad.reorganize()
+        
+        let filteredImage = orientedImage.applyingFilter("CIPerspectiveCorrection", parameters: [
+            "inputTopLeft": CIVector(cgPoint: cartesianScaledQuad.bottomLeft),
+            "inputTopRight": CIVector(cgPoint: cartesianScaledQuad.bottomRight),
+            "inputBottomLeft": CIVector(cgPoint: cartesianScaledQuad.topLeft),
+            "inputBottomRight": CIVector(cgPoint: cartesianScaledQuad.topRight)
+        ])
+        
+        let croppedImage = UIImage.from(ciImage: filteredImage)
+        // Enhanced Image
+        let enhancedImage = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
+        let enhancedScan = enhancedImage.flatMap { ImageScannerScan(image: $0) }
+        
+        let results = ImageScannerResults(detectedRectangle: scaledQuad, originalScan: ImageScannerScan(image: image), croppedScan: ImageScannerScan(image: croppedImage), enhancedScan: enhancedScan)
+        
+        var newResults = results
+        newResults.doesUserPreferEnhancedScan = isCurrentlyDisplayingEnhancedImage
+        newResults.isKeepScannning = true
+        imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
+        
+        navigationController?.popViewController(animated: true)
     }
 
     

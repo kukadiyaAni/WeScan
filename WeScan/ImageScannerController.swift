@@ -2,8 +2,8 @@
 //  ImageScannerController.swift
 //  WeScan
 //
-//  Update by Aniruddh Kukadiya on 3 Jan 2024.
-//  Copyright © 2018 Ani. All rights reserved.
+//  Created by Boris Emorine on 2/12/18.
+//  Copyright © 2018 WeTransfer. All rights reserved.
 // updated code
 
 import UIKit
@@ -282,6 +282,9 @@ public struct ImageScannerResults {
     
 //    @available(*, unavailable, renamed: "enhancedScan")
     public var enhancedImage: UIImage?
+    
+    //    @available(*, unavailable, renamed: "isKeepScannning")
+    public var isKeepScannning: Bool = false
     
 //    @available(*, unavailable, renamed: "doesUserPreferEnhancedScan")
     public var doesUserPreferEnhancedImage: Bool = false

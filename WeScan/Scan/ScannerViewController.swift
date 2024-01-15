@@ -3,7 +3,7 @@
 //  WeScan
 //
 //  Created by Boris Emorine on 2/8/18.
-//  Copyright © 2018 Ani. All rights reserved.
+//  Copyright © 2018 WeTransfer. All rights reserved.
 //
 
 import UIKit

@@ -2,7 +2,7 @@
 //  CaptureManager.swift
 //  WeScan
 //
-//  Created by Aniruddh Kukadiya on 1/1/2024.
+//  Created by Boris Emorine on 2/8/18.
 //  Copyright © 2018 WeTransfer. All rights reserved.
 //
 

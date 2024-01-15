@@ -125,8 +125,9 @@ final class ReviewViewController: UIViewController {
     }
     
     // MARK: Setups
-    
     private func setupViews() {
+        
+        view.addSubview(shutterButton)
         view.addSubview(imageView)
     }
     
@@ -136,22 +137,44 @@ final class ReviewViewController: UIViewController {
         //        navigationController?.toolbar.barStyle = .default
         navigationController?.toolbar.backgroundColor = .black
         
-        
         let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbarItems = [fixedSpace,shareButton, flexibleSpace,enhanceButton, flexibleSpace,doneButton,flexibleSpace,rotateButton,flexibleSpace,deleteButton, fixedSpace]
     }
+    lazy var selectPhotoButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "gallery", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(deleteImageController), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var shutterButton: ShutterButton = {
+        let button = ShutterButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(deleteImageController), for: .touchUpInside)
+        return button
+    }()
     
     private func setupConstraints() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        
         var imageViewConstraints: [NSLayoutConstraint] = []
+        var shutterButtonConstraints = [NSLayoutConstraint]()
+        
+        shutterButtonConstraints = [
+            shutterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            shutterButton.widthAnchor.constraint(equalToConstant: 65.0),
+            shutterButton.heightAnchor.constraint(equalToConstant: 65.0)
+        ]
         if #available(iOS 11.0, *) {
+        
             imageViewConstraints = [
                 view.safeAreaLayoutGuide.topAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.topAnchor),
                 view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.trailingAnchor),
-                view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 26),
+                view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 100),
                 view.safeAreaLayoutGuide.leadingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.leadingAnchor)
+                
             ]
         } else {
             imageViewConstraints = [
@@ -162,7 +185,7 @@ final class ReviewViewController: UIViewController {
             ]
         }
         
-        NSLayoutConstraint.activate(imageViewConstraints)
+        NSLayoutConstraint.activate(imageViewConstraints + shutterButtonConstraints)
     }
     
     // MARK: - Actions
