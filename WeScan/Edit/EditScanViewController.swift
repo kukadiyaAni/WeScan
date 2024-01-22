@@ -57,7 +57,7 @@ public final class EditScanViewController: UIViewController {
     
     private lazy var cancelButton: UIBarButtonItem = {
 //        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
-        let button = UIBarButtonItem(title: "Cancel", style: .plain,  target: self, action: #selector(cancelButtonTapped) )
+        let button = UIBarButtonItem(title: "Cancel", style: .plain,  target: self, action: #selector(deleteButtonTapped) )
         button.tintColor = .systemBlue
         return button
     }()
@@ -363,7 +363,7 @@ public final class EditScanViewController: UIViewController {
     
     private lazy var deleteButton: UIBarButtonItem = {
         let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(cancelButtonTapped))
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(deleteButtonTapped))
         button.tintColor = .systemBlue
         return button
     }()
@@ -409,7 +409,7 @@ public final class EditScanViewController: UIViewController {
         let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
         button.setImage(image, for: .normal)
-        button.addTarget(self, action:#selector(cancelButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action:#selector(deleteButtonTapped), for: .touchUpInside)
         button.tintColor = .systemBlue
         return button
     }()
@@ -526,6 +526,15 @@ public final class EditScanViewController: UIViewController {
     //  MARK: - Actions
     @objc func cancelButtonTapped() {
         if let imageScannerController = navigationController as? ImageScannerController {
+            imageScannerController.isDelete = false
+            imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
+        }
+    }
+    
+    //  MARK: - Actions
+    @objc func deleteButtonTapped() {
+        if let imageScannerController = navigationController as? ImageScannerController {
+            imageScannerController.isDelete = true
             imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
         }
     }

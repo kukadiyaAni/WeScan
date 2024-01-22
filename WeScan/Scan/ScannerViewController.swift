@@ -374,6 +374,7 @@ public final class ScannerViewController: UIViewController {
     
     @objc private func cancelImageScannerController() {
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        imageScannerController.isDelete = false;
         imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
     }
     

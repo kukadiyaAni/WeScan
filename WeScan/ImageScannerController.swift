@@ -46,6 +46,7 @@ public final class ImageScannerController: UINavigationController, UIImagePicker
     private var shouldOpenEditor: Bool = false
     private var fileName: String = ""
     private var fromLocalUrl: Bool = false
+    public var isDelete: Bool = false
     /// The object that acts as the delegate of the `ImageScannerController`.
     public weak var imageScannerDelegate: ImageScannerControllerDelegate?
     
