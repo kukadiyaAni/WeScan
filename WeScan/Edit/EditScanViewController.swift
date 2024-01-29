@@ -122,7 +122,7 @@ public final class EditScanViewController: UIViewController {
         stackView.spacing = 10
         stackView.addArrangedSubview(shareButtonIcon)
         stackView.addArrangedSubview(enhanceButtonIcon)
-        stackView.addArrangedSubview(doneButtonIcon)
+//        stackView.addArrangedSubview(doneButtonIcon)
         stackView.addArrangedSubview(rotateButtonIcon)
         stackView.addArrangedSubview(deleteButtonIcon)
         // Inside viewDidLoad()
