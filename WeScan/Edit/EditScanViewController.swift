@@ -14,7 +14,7 @@ extension UIColor {
         let red = CGFloat((hex & 0xFF0000) >> 16) / 255.0
         let green = CGFloat((hex & 0x00FF00) >> 8) / 255.0
         let blue = CGFloat(hex & 0x0000FF) / 255.0
-
+        
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 }
@@ -48,22 +48,22 @@ public final class EditScanViewController: UIViewController {
     }()
     
     private lazy var nextButton: UIBarButtonItem = {
-//        let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
+        //        let title = NSLocalizedString("wescan.edit.button.next", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Next", comment: "A generic next button")
         let button = UIBarButtonItem(title: "Keep", style: .plain, target: self, action: #selector(pushReviewController))
         button.tintColor = .systemBlue
-//        button.tintColor = UIColor(displayP3Red: 48, green: 103, blue: 255, alpha: 1)
+        //        button.tintColor = UIColor(displayP3Red: 48, green: 103, blue: 255, alpha: 1)
         return button
     }()
     
     private lazy var cancelButton: UIBarButtonItem = {
-//        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
+        //        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
         let button = UIBarButtonItem(title: "Cancel", style: .plain,  target: self, action: #selector(deleteButtonTapped) )
         button.tintColor = .systemBlue
         return button
     }()
     
     private lazy var retakeButton: UIBarButtonItem = {
-//        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
+        //        let title = NSLocalizedString("wescan.scanning.cancel", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Cancel", comment: "A generic cancel button")
         let button = UIBarButtonItem(title: "Retake", style: .plain,  target: self, action: #selector(retakeButtonTapped) )
         button.tintColor = .systemBlue
         return button
@@ -83,7 +83,7 @@ public final class EditScanViewController: UIViewController {
     
     // MARK: - Life Cycle
     
-
+    
     
     init(image: UIImage, quad: Quadrilateral?, rotateImage: Bool = false, galleryScan: Bool? = false) {
         self.image = rotateImage ? image.applyingPortraitOrientation() : image
@@ -103,7 +103,8 @@ public final class EditScanViewController: UIViewController {
     let containerView = UIView()
     
     let stckVerticle = UIStackView()
-    
+    let buttonWidth: CGFloat = 60
+    let buttonHeight: CGFloat = 50
     
     let bottomView = UIView()
     let mainView = UIView()
@@ -111,31 +112,36 @@ public final class EditScanViewController: UIViewController {
     
     private func setupViews() {
         containerView.backgroundColor = UIColor.black
-        mainView.frame = CGRect(x: 0, y: 0, width: 500, height: 900) // Set your desired origin, width, and height
-
+        var screenWidth = UIScreen.main.bounds.width;
+        let screenHeight = UIScreen.main.bounds.height;
+        
+        mainView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+        
         stckVerticle.axis = .vertical
         stckVerticle.distribution = .equalSpacing
-        
+        screenWidth = (screenWidth + 75) - (buttonWidth*4)
+        screenWidth = screenWidth/3
+        print("Device width: \(screenWidth)")
         stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
+                stackView.distribution = .equalSpacing
         stackView.alignment = .center
-        stackView.spacing = 10
+//        stackView.spacing = screenWidth
         stackView.addArrangedSubview(shareButtonIcon)
         stackView.addArrangedSubview(enhanceButtonIcon)
-//        stackView.addArrangedSubview(doneButtonIcon)
+        //        stackView.addArrangedSubview(doneButtonIcon)
         stackView.addArrangedSubview(rotateButtonIcon)
         stackView.addArrangedSubview(deleteButtonIcon)
-
+        
         // Inside viewDidLoad()
         print("Stack View Frame: \(stackView.frame)")
-
+        
         // Inside the loop where buttons are created
         print("Button Frame: \(shutterButton.frame)")
         
-//        view.addSubview(imageView)
-//        view.addSubview(quadView)
+        //        view.addSubview(imageView)
+        //        view.addSubview(quadView)
         stckVerticle.addArrangedSubview(stackView)
-     
+        
         stackBottomView.axis = .horizontal
         stackBottomView.distribution = .equalSpacing
         stackBottomView.alignment = .center
@@ -147,14 +153,14 @@ public final class EditScanViewController: UIViewController {
         mainView.addSubview(imageView)
         mainView.addSubview(quadView)
         view.addSubview(mainView)
-//        containerView.addSubview(stackView)
-//        bottomView.addSubview(stackBottomView)
-       
+        //        containerView.addSubview(stackView)
+        //        bottomView.addSubview(stackBottomView)
+        
         stckVerticle.addArrangedSubview(stackBottomView)
         
         containerView.addSubview(stckVerticle)
         view.addSubview(containerView)
-//        view.addSubview(bottomView)
+        //        view.addSubview(bottomView)
         
         zoomGestureController = ZoomGestureController(image: image, quadView: quadView)
         
@@ -162,100 +168,99 @@ public final class EditScanViewController: UIViewController {
         touchDown.minimumPressDuration = 0
         mainView.addGestureRecognizer(touchDown)
         
-//        let theHeight = view.frame.size.height //grabs the height of your view
-//
-//         var bottomBar = UIView()
-//        let navigationHeight = navigationController?.navigationBar.frame.size.height ?? 0;
-//        bottomBar.backgroundColor = UIColor.red
-//        let marginBottom = bottomNotchHeight + topNotchHeight + navigationHeight + 50;
-//
-//        print("marginBottom",marginBottom)
-//        bottomBar.frame = CGRect(x: 0, y: theHeight - marginBottom , width: self.view.frame.width, height: 50)
-//
-//        bottomBar.addSubview(enhanceButton)
-//        bottomBar.addSubview(rotateButton)
-//        bottomBar.addSubview(doneButton)
-//        bottomBar.addSubview(deleteButton)
-//        bottomBar.addSubview(shareButton)
-//
-//         view.addSubview(bottomBar)
+        //        let theHeight = view.frame.size.height //grabs the height of your view
+        //
+        //         var bottomBar = UIView()
+        //        let navigationHeight = navigationController?.navigationBar.frame.size.height ?? 0;
+        //        bottomBar.backgroundColor = UIColor.red
+        //        let marginBottom = bottomNotchHeight + topNotchHeight + navigationHeight + 50;
+        //
+        //        print("marginBottom",marginBottom)
+        //        bottomBar.frame = CGRect(x: 0, y: theHeight - marginBottom , width: self.view.frame.width, height: 50)
+        //
+        //        bottomBar.addSubview(enhanceButton)
+        //        bottomBar.addSubview(rotateButton)
+        //        bottomBar.addSubview(doneButton)
+        //        bottomBar.addSubview(deleteButton)
+        //        bottomBar.addSubview(shareButton)
+        //
+        //         view.addSubview(bottomBar)
     }
     
-   private func setupConstraints() {
-//       stackView.removeConstraints(stackView.constraints)
-
-        let size = hasTopNotch ? bottomNotchHeight+60 : 60
-       containerView.translatesAutoresizingMaskIntoConstraints = false
-       stckVerticle.translatesAutoresizingMaskIntoConstraints = false
-       stackView.translatesAutoresizingMaskIntoConstraints = false
-       continueButton.translatesAutoresizingMaskIntoConstraints = false
-       let imageViewConstraints = [
-        imageView.topAnchor.constraint(equalTo: view.topAnchor),
-        imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: size*2),
-        view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
-       ]
-       
-       var stackViewConstraints = [NSLayoutConstraint]()
-       stackViewConstraints = [
-        stckVerticle.topAnchor.constraint(equalTo: containerView.topAnchor),
-        stckVerticle.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-        stckVerticle.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-        stckVerticle.bottomAnchor.constraint(equalTo: containerView.bottomAnchor), // Adjust the height of the container view if needed
+    private func setupConstraints() {
+        //       stackView.removeConstraints(stackView.constraints)
         
-
-       ]
-       
-       var containerViewConstraints = [NSLayoutConstraint]()
-       containerViewConstraints = [
-//        stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
-        stckVerticle.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -size/2),
-        stckVerticle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        stckVerticle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-
-//        containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-        containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        containerView.heightAnchor.constraint(equalToConstant: 100),  // Adjust the height of the container view if needed
-       ]
-       
-       quadViewWidthConstraint = quadView.widthAnchor.constraint(equalToConstant: 0.0)
-       quadViewHeightConstraint = quadView.heightAnchor.constraint(equalToConstant: 0.0)
-       
-       let quadViewConstraints = [
-        quadView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        quadView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: -(size)),
-        quadViewWidthConstraint,
-        quadViewHeightConstraint
-       ]
-       
-       let mainViewConstraints = [
-        mainView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        mainView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: -(size)),
-        view.bottomAnchor.constraint(equalTo: mainView.bottomAnchor,constant: size*2),
-        view.leadingAnchor.constraint(equalTo: mainView.leadingAnchor)
-       ]
-       
-             let centerButtonCon = [ keepScaning.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                                     keepScaning.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -(size-20)),
-                                  keepScaning.widthAnchor.constraint(equalToConstant: 150),
-                                  keepScaning.heightAnchor.constraint(equalToConstant: 50),
-             ]
-       
-       let continueButtonCon = [   continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-                              continueButton.centerYAnchor.constraint(equalTo: keepScaning.centerYAnchor),
-                              continueButton.widthAnchor.constraint(equalToConstant: 150),
-                              continueButton.heightAnchor.constraint(equalToConstant: 50),
-       ]
+        let size = hasTopNotch ? bottomNotchHeight+60 : 60
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        stckVerticle.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        continueButton.translatesAutoresizingMaskIntoConstraints = false
+        let imageViewConstraints = [
+            imageView.topAnchor.constraint(equalTo: view.topAnchor),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor,constant: size*2),
+            view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
+        ]
+        
+        var stackViewConstraints = [NSLayoutConstraint]()
+        stackViewConstraints = [
+            stckVerticle.topAnchor.constraint(equalTo: containerView.topAnchor),
+            stckVerticle.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            stckVerticle.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            stckVerticle.bottomAnchor.constraint(equalTo: containerView.bottomAnchor), // Adjust the height of the container view if needed
+            
+            
+        ]
+        var containerViewConstraints = [NSLayoutConstraint]()
+        containerViewConstraints = [
+            //        stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
+            stckVerticle.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(size/2)-10),
+            stckVerticle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            stckVerticle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            //        containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 100),  // Adjust the height of the container view if needed
+        ]
+        
+        quadViewWidthConstraint = quadView.widthAnchor.constraint(equalToConstant: 0.0)
+        quadViewHeightConstraint = quadView.heightAnchor.constraint(equalToConstant: 0.0)
+        
+        let quadViewConstraints = [
+            quadView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            quadView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: -(size)),
+            quadViewWidthConstraint,
+            quadViewHeightConstraint
+        ]
+        
+        let mainViewConstraints = [
+            mainView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mainView.centerYAnchor.constraint(equalTo: view.centerYAnchor,constant: -(size)),
+            view.bottomAnchor.constraint(equalTo: mainView.bottomAnchor,constant: size*2),
+            view.leadingAnchor.constraint(equalTo: mainView.leadingAnchor)
+        ]
+        
+        let centerButtonCon = [ keepScaning.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                keepScaning.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: -(size-20)),
+                                keepScaning.widthAnchor.constraint(equalToConstant: 150),
+                                keepScaning.heightAnchor.constraint(equalToConstant: 50),
+        ]
+        
+        let continueButtonCon = [   continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+                                    continueButton.centerYAnchor.constraint(equalTo: keepScaning.centerYAnchor),
+                                    continueButton.widthAnchor.constraint(equalToConstant: 150),
+                                    continueButton.heightAnchor.constraint(equalToConstant: 50),
+        ]
         NSLayoutConstraint.activate(quadViewConstraints + imageViewConstraints + stackViewConstraints + containerViewConstraints + mainViewConstraints + centerButtonCon + continueButtonCon)
     }
     private lazy var homeButton: UIBarButtonItem = {
-    let image = UIImage(systemName: "house.fill", named: "flash", in: Bundle(for: EditScanViewController.self), compatibleWith: nil)
-    let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(cancelButtonTapped))
-    button.tintColor = .white
-    
-    return button
-}()
+        let image = UIImage(systemName: "house.fill", named: "flash", in: Bundle(for: EditScanViewController.self), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(cancelButtonTapped))
+        button.tintColor = .white
+        
+        return button
+    }()
     override public func viewDidLoad() {
         super.viewDidLoad()
         
@@ -265,17 +270,17 @@ public final class EditScanViewController: UIViewController {
         setupConstraints()
         
         
-//        title = NSLocalizedString("wescan.edit.title", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Edit Scan", comment: "The title of the EditScanViewController")
-//        navigationItem.rightBarButtonItem = nextButton
+        //        title = NSLocalizedString("wescan.edit.title", tableName: nil, bundle: Bundle(for: EditScanViewController.self), value: "Edit Scan", comment: "The title of the EditScanViewController")
+        //        navigationItem.rightBarButtonItem = nextButton
         navigationController?.navigationBar.backgroundColor = .black
         navigationItem.titleView?.backgroundColor = .black
         self.view.backgroundColor = .black
-//        if let firstVC = self.navigationController?.viewControllers.first, firstVC == self {
-//
-//            navigationItem.leftBarButtonItem = cancelButton
-//        } else {
-//            navigationItem.leftBarButtonItem = cancelButton
-//        }
+        //        if let firstVC = self.navigationController?.viewControllers.first, firstVC == self {
+        //
+        //            navigationItem.leftBarButtonItem = cancelButton
+        //        } else {
+        //            navigationItem.leftBarButtonItem = cancelButton
+        //        }
         
         
     }
@@ -284,25 +289,25 @@ public final class EditScanViewController: UIViewController {
         
         
         
-//            guard enhancedImageIsAvailable else { return }
-            
-//            navigationController?.toolbar.backgroundColor = .red
-            
-            
-            let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-            let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-//            toolbarItems = [fixedSpace,shareButton, flexibleSpace,enhanceButton, flexibleSpace,doneButton,flexibleSpace,rotateButton,flexibleSpace,deleteButton, fixedSpace]
+        //            guard enhancedImageIsAvailable else { return }
+        
+        //            navigationController?.toolbar.backgroundColor = .red
+        
+        
+        let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        //            toolbarItems = [fixedSpace,shareButton, flexibleSpace,enhanceButton, flexibleSpace,doneButton,flexibleSpace,rotateButton,flexibleSpace,deleteButton, fixedSpace]
         
         
         navigationController?.setToolbarHidden(true, animated: false)
-//
-//        navigationItem.rightBarButtonItem = nextButton
-//        if(self.galleryScan){
-//            navigationItem.leftBarButtonItem = cancelButton
-//
-//        } else {
-//            navigationItem.leftBarButtonItem = retakeButton
-//        }
+        //
+        //        navigationItem.rightBarButtonItem = nextButton
+        //        if(self.galleryScan){
+        //            navigationItem.leftBarButtonItem = cancelButton
+        //
+        //        } else {
+        //            navigationItem.leftBarButtonItem = retakeButton
+        //        }
         
     }
     
@@ -311,13 +316,13 @@ public final class EditScanViewController: UIViewController {
         adjustQuadViewConstraints()
         displayQuad()
         setupToolbar()
-//        navigationController?.setToolbarHidden(false, animated: true)
+        //        navigationController?.setToolbarHidden(false, animated: true)
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
         navigationController?.setToolbarHidden(true, animated: true)
         super.viewWillDisappear(animated)
-       
+        
         // Work around for an iOS 11.2 bug where UIBarButtonItems don't get back to their normal state after being pressed.
         navigationController?.navigationBar.tintAdjustmentMode = .normal
         navigationController?.navigationBar.tintAdjustmentMode = .automatic
@@ -337,8 +342,6 @@ public final class EditScanViewController: UIViewController {
             print("xValue",x)
             return spaceCount + buttonSizeCount;
         }
-        return spaceSize;
-        
     }
     
     
@@ -380,41 +383,187 @@ public final class EditScanViewController: UIViewController {
     
     
     private lazy var enhanceButtonIcon: UIButton = {
+        
+        //        let image = UIImage(  named: "ic_disc", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        //        let button = UIButton(frame: CGRect(x: getX(number: 1), y: 0, width: 50, height: 50))
+        //        button.setImage(image, for: .normal)
+        //        button.addTarget(self, action:#selector(toggleEnhancedImage), for: .touchUpInside)
+        //        button.tintColor = .systemBlue
+        //        return button
+        
+        let button = CustomButton()
 
-        let image = UIImage(  named: "ic_disc", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIButton(frame: CGRect(x: getX(number: 1), y: 0, width: 50, height: 50))
-        button.setImage(image, for: .normal)
+        button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
+        button.setTitle("Enhance", for: .normal)
+        button.setImage(UIImage(named: "ic_disc", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
+        button.titleLabel?.textColor = .blue
         button.addTarget(self, action:#selector(toggleEnhancedImage), for: .touchUpInside)
-        button.tintColor = .systemBlue
-        return button
-    }()
 
+        return button
+        
+//        // Create the button
+//        let button = UIButton(frame: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight))
+//        button.tintColor = .systemBlue
+//        
+//        // Create the image
+//        let image = UIImage(named: "ic_disc", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+//        let imageView = UIImageView(image: image)
+//        imageView.contentMode = .scaleAspectFit
+//        
+//        // Calculate the position for the image view to center it horizontally
+//        let imageX = (buttonWidth - imageView.frame.width) / 2
+//        imageView.frame.origin = CGPoint(x: imageX, y: 0)
+//        
+//        // Create the label
+//        let label = UILabel(frame: CGRect(x: 0, y: buttonHeight - 25, width: buttonWidth, height: 30))
+//        label.text = "Enhance"
+//        label.textAlignment = .center
+//        label.textColor = .white
+//        label.font = UIFont(name: "SFProText-Regular", size: 14)
+//        
+//        // Add the image view and label to the button
+//        button.addSubview(imageView)
+//        button.addSubview(label)
+//        button.addTarget(self, action:#selector(toggleEnhancedImage), for: .touchUpInside)
+//        return button
+    }()
+    
     private lazy var rotateButtonIcon: UIButton = {
-        let image = UIImage(  named: "ic_rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIButton(frame: CGRect(x: getX(number: 2), y: 0, width: 50, height: 50))
-        button.setImage(image, for: .normal)
+        //        let image = UIImage(  named: "ic_rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        //        let button = UIButton(frame: CGRect(x: getX(number: 2), y: 0, width: 50, height: 50))
+        //        button.setImage(image, for: .normal)
+        //        button.addTarget(self, action:#selector(rotateImage), for: .touchUpInside)
+        //        button.tintColor = .systemBlue
+        //        return button
+        
+        let button = CustomButton()
+
+        button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
+        button.setTitle("Rotate", for: .normal)
+        button.setImage(UIImage(named: "ic_rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
+        button.titleLabel?.textColor = .blue
         button.addTarget(self, action:#selector(rotateImage), for: .touchUpInside)
-        button.tintColor = .systemBlue
-        return button
-    }()
 
+        return button
+        
+//        // Create the button
+//        let button = UIButton(frame: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight))
+//        button.tintColor = .systemBlue
+//        
+//        // Create the image
+//        let image = UIImage(named: "ic_rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+//        let imageView = UIImageView(image: image)
+//        imageView.contentMode = .scaleAspectFit
+//        
+//        // Calculate the position for the image view to center it horizontally
+//        let imageX = (buttonWidth - imageView.frame.width) / 2
+//        imageView.frame.origin = CGPoint(x: imageX, y: 0)
+//        
+//        // Create the label
+//        let label = UILabel(frame: CGRect(x: 0, y: buttonHeight - 25, width: buttonWidth, height: 30))
+//        label.text = "Rotate"
+//        label.textAlignment = .center
+//        label.textColor = .white
+//        label.font = UIFont(name: "SFProText-Regular", size: 14)
+//        
+//        // Add the image view and label to the button
+//        button.addSubview(imageView)
+//        button.addSubview(label)
+//        button.addTarget(self, action:#selector(rotateImage), for: .touchUpInside)
+//        
+//        return button
+    }()
+    
     private lazy var doneButtonIcon: UIButton = {
-        let image = UIImage(  named: "zdc_tick_icon", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIButton(frame: CGRect(x: getX(number: 3), y: 0, width: 50, height: 50))
-        button.setImage(image, for: .normal)
+        //        let image = UIImage(  named: "zdc_tick_icon", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        //        let button = UIButton(frame: CGRect(x: getX(number: 3), y: 0, width: 50, height: 50))
+        //        button.setImage(image, for: .normal)
+        //        button.addTarget(self, action:#selector(finishScan), for: .touchUpInside)
+        //        button.tintColor = .systemBlue
+        //        return button
+        
+        
+        let button = CustomButton()
+
+        button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
+        button.setTitle("Done", for: .normal)
+        button.setImage(UIImage(named: "zdc_tick_icon", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
+        button.titleLabel?.textColor = .blue
         button.addTarget(self, action:#selector(finishScan), for: .touchUpInside)
-        button.tintColor = .systemBlue
+
         return button
+//        // Create the button
+//        let button = UIButton(frame: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight))
+//        button.tintColor = .systemBlue
+//        
+//        // Create the image
+//        let image = UIImage(named: "zdc_tick_icon", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+//        let imageView = UIImageView(image: image)
+//        imageView.contentMode = .scaleAspectFit
+//        
+//        // Calculate the position for the image view to center it horizontally
+//        let imageX = (buttonWidth - imageView.frame.width) / 2
+//        imageView.frame.origin = CGPoint(x: imageX, y: 0)
+//        
+//        // Create the label
+//        let label = UILabel(frame: CGRect(x: 0, y: buttonHeight - 25, width: buttonWidth, height: 30))
+//        label.text = "Done"
+//        label.textAlignment = .center
+//        label.textColor = .white
+//        label.font = UIFont(name: "SFProText-Regular", size: 14)
+//        
+//        // Add the image view and label to the button
+//        button.addSubview(imageView)
+//        button.addSubview(label)
+//        button.addTarget(self, action:#selector(finishScan), for: .touchUpInside)
+//        return button
     }()
-
-
+    
+    
     private lazy var deleteButtonIcon: UIButton = {
-        let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
-        button.setImage(image, for: .normal)
+        //        let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        //        let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
+        //        button.setImage(image, for: .normal)
+        //        button.addTarget(self, action:#selector(deleteButtonTapped), for: .touchUpInside)
+        //        button.tintColor = .systemBlue
+        //        return button
+        
+        let button = CustomButton()
+
+        button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
+        button.setTitle("Delete", for: .normal)
+        button.setImage(UIImage(named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
+        button.titleLabel?.textColor = .blue
         button.addTarget(self, action:#selector(deleteButtonTapped), for: .touchUpInside)
-        button.tintColor = .systemBlue
+
         return button
+//        
+//        // Create the button
+//        let button = UIButton(frame: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight))
+//        button.tintColor = .systemBlue
+//        
+//        // Create the image
+//        let image = UIImage(named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+//        let imageView = UIImageView(image: image)
+//        imageView.contentMode = .scaleAspectFit
+//        
+//        // Calculate the position for the image view to center it horizontally
+//        let imageX = (buttonWidth - imageView.frame.width) / 2
+//        imageView.frame.origin = CGPoint(x: imageX, y: 0)
+//        
+//        // Create the label
+//        let label = UILabel(frame: CGRect(x: 0, y: buttonHeight - 25, width: buttonWidth, height: 30))
+//        label.text = "Delete"
+//        label.textAlignment = .center
+//        label.textColor = .white
+//        label.font = UIFont(name: "SFProText-Regular", size: 14)
+//        
+//        // Add the image view and label to the button
+//        button.addSubview(imageView)
+//        button.addSubview(label)
+//        button.addTarget(self, action:#selector(deleteButtonTapped), for: .touchUpInside)
+//        
+//        return button
     }()
     
     private lazy var keepScaning: UIButton = {
@@ -425,9 +574,9 @@ public final class EditScanViewController: UIViewController {
         button.setTitleColor(textColor, for: .normal)
         button.titleLabel?.font = UIFont(name: "SFProText-Regular", size: 19.0)
         button.addTarget(self, action:#selector(keepScanningDcouments), for: .touchUpInside)
-
-//        button.setTitleColor(UIColor(rgb: "0xB1B1B1"), for: .normal)
-
+        
+        //        button.setTitleColor(UIColor(rgb: "0xB1B1B1"), for: .normal)
+        
         return button
     }()
     
@@ -440,7 +589,9 @@ public final class EditScanViewController: UIViewController {
         } else {
             // Fallback on earlier versions
         }
-
+        
+        
+        
         return button
     }()
     
@@ -456,24 +607,54 @@ public final class EditScanViewController: UIViewController {
         button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         
         button.addTarget(self, action:#selector(finishScan), for: .touchDown)
-
+        
         return button
     }()
-//
+    //
     private lazy var shareButtonIcon: UIButton = {
-        let image = UIImage(named: "ic_share", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
-        let button = UIButton(frame: CGRect(x: getX(number: 5), y: 0, width: 50, height: 50))
-        button.setImage(image, for: .normal)
+        let button = CustomButton()
+
+        button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
+        button.setTitle("Share", for: .normal)
+        button.setImage(UIImage(named: "ic_share", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
+        button.titleLabel?.textColor = .blue
         button.addTarget(self, action:#selector(shareImageButton), for: .touchUpInside)
-        button.tintColor = .systemBlue
         return button
+        
+//        // Create the button
+//        let button = UIButton(frame: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight))
+//        button.tintColor = .systemBlue
+//        
+//        // Create the image
+//        let image = UIImage(named: "ic_share", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+//        let imageView = UIImageView(image: image)
+//        imageView.contentMode = .scaleAspectFit
+//        
+//        // Calculate the position for the image view to center it horizontally
+//        let imageX = (buttonWidth - imageView.frame.width) / 2
+//        imageView.frame.origin = CGPoint(x: imageX, y: 0)
+//        
+//        // Create the label
+//        let label = UILabel(frame: CGRect(x: 0, y: buttonHeight - 25, width: buttonWidth, height: 30))
+//        label.text = "Share"
+//        label.textAlignment = .center
+//        label.textColor = .white
+//        label.font = UIFont(name: "SFProText-Regular", size: 14)
+//        
+//        // Add the image view and label to the button
+//        button.addSubview(imageView)
+//        button.addSubview(label)
+//        
+//        button.addTarget(self, action:#selector(shareImageButton), for: .touchUpInside)
+//        button.backgroundColor = .green
+//        return button
     }()
     
     // MARK: - Setups
-   
+    
     
     var hasTopNotch: Bool {
-       if #available(iOS 13.0,  *) {
+        if #available(iOS 13.0,  *) {
             return UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.top ?? 0 > 20
         }else{
             if #available(iOS 11.0, *) {
@@ -486,7 +667,7 @@ public final class EditScanViewController: UIViewController {
     }
     
     var bottomNotchHeight: CGFloat {
-       if #available(iOS 13.0,  *) {
+        if #available(iOS 13.0,  *) {
             return UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.bottom ?? 0
         }else{
             if #available(iOS 11.0, *) {
@@ -499,7 +680,7 @@ public final class EditScanViewController: UIViewController {
     }
     
     var topNotchHeight: CGFloat {
-       if #available(iOS 13.0,  *) {
+        if #available(iOS 13.0,  *) {
             return UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.safeAreaInsets.top ?? 0
         }else{
             if #available(iOS 11.0, *) {
@@ -521,7 +702,7 @@ public final class EditScanViewController: UIViewController {
         let button = UIButton()
         button.setImage(UIImage(named: "gallery", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = UIColor.white
-//        button.translatesAutoresizingMaskIntoConstraints = false
+        //        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(retakeButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -549,12 +730,12 @@ public final class EditScanViewController: UIViewController {
     
     @objc func pushReviewController() {
         guard let quad = quadView.quad,
-            let ciImage = CIImage(image: image) else {
-                if let imageScannerController = navigationController as? ImageScannerController {
-                    let error = ImageScannerControllerError.ciImageCreation
-                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
-                }
-                return
+              let ciImage = CIImage(image: image) else {
+            if let imageScannerController = navigationController as? ImageScannerController {
+                let error = ImageScannerControllerError.ciImageCreation
+                imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+            }
+            return
         }
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
@@ -632,18 +813,18 @@ public final class EditScanViewController: UIViewController {
     
     @objc private func reloadImage() {
         guard let quad = quadView.quad,
-            let ciImage = CIImage(image: image) else {
-                if let imageScannerController = navigationController as? ImageScannerController {
-                    let error = ImageScannerControllerError.ciImageCreation
-                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
-                }
-                return
+              let ciImage = CIImage(image: image) else {
+            if let imageScannerController = navigationController as? ImageScannerController {
+                let error = ImageScannerControllerError.ciImageCreation
+                imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+            }
+            return
         }
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
         let scaledQuad = self.orignalPhotoQuad
         
-//        self.quad = scaledQuad
+        //        self.quad = scaledQuad
         
         // Cropped Image
         var cartesianScaledQuad = scaledQuad.toCartesian(withHeight: image.size.height)
@@ -671,10 +852,10 @@ public final class EditScanViewController: UIViewController {
     }
     
     @objc func toggleEnhancedImage() {
-//        guard enhancedImageIsAvailable else { return }
+        //        guard enhancedImageIsAvailable else { return }
         isCurrentlyDisplayingEnhancedImage.toggle()
         reloadImage()
-
+        
     }
     
     @objc func rotateImage() {
@@ -706,12 +887,12 @@ public final class EditScanViewController: UIViewController {
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
         
         guard let quad = quadView.quad,
-            let ciImage = CIImage(image: image) else {
-                if let imageScannerController = navigationController as? ImageScannerController {
-                    let error = ImageScannerControllerError.ciImageCreation
-                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
-                }
-                return
+              let ciImage = CIImage(image: image) else {
+            if let imageScannerController = navigationController as? ImageScannerController {
+                let error = ImageScannerControllerError.ciImageCreation
+                imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+            }
+            return
         }
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
@@ -741,7 +922,7 @@ public final class EditScanViewController: UIViewController {
         newResults.isKeepScannning = false
         if(isShare){
             isShare = false
-
+            
             if(isCurrentlyDisplayingEnhancedImage){
                 let image = newResults.enhancedScan?.image
                 let imageShare = [ image! ]
@@ -755,7 +936,7 @@ public final class EditScanViewController: UIViewController {
                 activityViewController.popoverPresentationController?.sourceView = self.view
                 self.present(activityViewController, animated: true, completion: nil)
             }
-
+            
         } else {
             imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
         }
@@ -766,12 +947,12 @@ public final class EditScanViewController: UIViewController {
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
         
         guard let quad = quadView.quad,
-            let ciImage = CIImage(image: image) else {
-                if let imageScannerController = navigationController as? ImageScannerController {
-                    let error = ImageScannerControllerError.ciImageCreation
-                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
-                }
-                return
+              let ciImage = CIImage(image: image) else {
+            if let imageScannerController = navigationController as? ImageScannerController {
+                let error = ImageScannerControllerError.ciImageCreation
+                imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+            }
+            return
         }
         let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(cgOrientation.rawValue))
@@ -803,6 +984,6 @@ public final class EditScanViewController: UIViewController {
         
         navigationController?.popViewController(animated: true)
     }
-
+    
     
 }
