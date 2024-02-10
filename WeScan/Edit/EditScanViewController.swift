@@ -125,6 +125,7 @@ public final class EditScanViewController: UIViewController {
 //        stackView.addArrangedSubview(doneButtonIcon)
         stackView.addArrangedSubview(rotateButtonIcon)
         stackView.addArrangedSubview(deleteButtonIcon)
+
         // Inside viewDidLoad()
         print("Stack View Frame: \(stackView.frame)")
 
@@ -151,7 +152,7 @@ public final class EditScanViewController: UIViewController {
        
         stckVerticle.addArrangedSubview(stackBottomView)
         
-                containerView.addSubview(stckVerticle)
+        containerView.addSubview(stckVerticle)
         view.addSubview(containerView)
 //        view.addSubview(bottomView)
         
@@ -209,6 +210,8 @@ public final class EditScanViewController: UIViewController {
        containerViewConstraints = [
 //        stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
         stckVerticle.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -size/2),
+        stckVerticle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+        stckVerticle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
 //        containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),

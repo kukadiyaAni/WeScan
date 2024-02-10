@@ -228,7 +228,7 @@ public final class ScannerViewController: UIViewController {
             }
             cancelButtonConstraints = [
                 flashButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 24.0),
-                view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: flashButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
+                view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: flashButton.bottomAnchor, constant: (65.0 / 2) - 2 )
             ]
             
             let shutterButtonBottomConstraint = view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: shutterButton.bottomAnchor, constant: 8.0)
@@ -244,7 +244,7 @@ public final class ScannerViewController: UIViewController {
             }
             cancelButtonConstraints = [
                 flashButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 24.0),
-                view.bottomAnchor.constraint(equalTo: flashButton.bottomAnchor, constant: (65.0 / 2) - 10.0)
+                view.bottomAnchor.constraint(equalTo: flashButton.bottomAnchor, constant: (65.0 / 2) - 2 )
             ]
             
             let shutterButtonBottomConstraint = view.bottomAnchor.constraint(equalTo: shutterButton.bottomAnchor, constant: 8.0)
