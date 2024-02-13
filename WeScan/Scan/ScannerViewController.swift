@@ -45,6 +45,14 @@ public final class ScannerViewController: UIViewController {
         return button
     }()
     
+    private lazy var bottomButton: UIButton = {
+        let button = UIButton()
+      
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     lazy var selectPhotoButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "gallery", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -173,8 +181,10 @@ public final class ScannerViewController: UIViewController {
         quadView.translatesAutoresizingMaskIntoConstraints = false
         quadView.editable = false
         view.addSubview(quadView)
+        view.addSubview(bottomButton)
         view.addSubview(flashButton)
         view.addSubview(shutterButton)
+
         if canSelectPhoto {
             view.addSubview(selectPhotoButton)
         }
@@ -198,6 +208,7 @@ public final class ScannerViewController: UIViewController {
         var shutterButtonConstraints = [NSLayoutConstraint]()
         var activityIndicatorConstraints = [NSLayoutConstraint]()
         var selectPhotoButtonConstraints = [NSLayoutConstraint]()
+        var bottomButtonConstraints = [NSLayoutConstraint]()
         
         quadViewConstraints = [
             quadView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -215,6 +226,13 @@ public final class ScannerViewController: UIViewController {
         activityIndicatorConstraints = [
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ]
+        
+        bottomButtonConstraints = [
+            bottomButton.leftAnchor.constraint(equalTo: view.leftAnchor),
+            bottomButton.widthAnchor.constraint(equalToConstant: 500),
+            bottomButton.heightAnchor.constraint(equalToConstant: 100.0),
+            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: bottomButton.bottomAnchor, constant: 0)
         ]
         
         if #available(iOS 11.0, *) {
@@ -251,7 +269,7 @@ public final class ScannerViewController: UIViewController {
             shutterButtonConstraints.append(shutterButtonBottomConstraint)
         }
         
-        NSLayoutConstraint.activate(quadViewConstraints + cancelButtonConstraints + selectPhotoButtonConstraints + shutterButtonConstraints + activityIndicatorConstraints)
+        NSLayoutConstraint.activate(quadViewConstraints + cancelButtonConstraints + selectPhotoButtonConstraints + shutterButtonConstraints + activityIndicatorConstraints + bottomButtonConstraints)
     }
     
     // MARK: - Tap to Focus
