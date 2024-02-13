@@ -212,16 +212,17 @@ public final class EditScanViewController: UIViewController {
             
         ]
         var containerViewConstraints = [NSLayoutConstraint]()
+        
         containerViewConstraints = [
             //        stackView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
-            stckVerticle.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(size/2)-10),
+//            stckVerticle.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(size/2)-10),
             stckVerticle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             stckVerticle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
             //        containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            containerView.heightAnchor.constraint(equalToConstant: 100),  // Adjust the height of the container view if needed
+            containerView.heightAnchor.constraint(equalToConstant: 120),  // Adjust the height of the container view if needed
         ]
         
         quadViewWidthConstraint = quadView.widthAnchor.constraint(equalToConstant: 0.0)
@@ -247,7 +248,7 @@ public final class EditScanViewController: UIViewController {
                                 keepScaning.heightAnchor.constraint(equalToConstant: 50),
         ]
         
-        let continueButtonCon = [   continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+        let continueButtonCon = [   continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
                                     continueButton.centerYAnchor.constraint(equalTo: keepScaning.centerYAnchor),
                                     continueButton.widthAnchor.constraint(equalToConstant: 150),
                                     continueButton.heightAnchor.constraint(equalToConstant: 50),
