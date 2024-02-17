@@ -28,6 +28,8 @@ public final class EditScanViewController: UIViewController {
     private var isShare = false
     private var isKeepScanning = false
     
+   
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
@@ -396,8 +398,11 @@ public final class EditScanViewController: UIViewController {
 
         button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
         button.setTitle("Enhance", for: .normal)
+        let textHexColor: UInt32 = 0x3067FF
+        let textColor = UIColor(hex: textHexColor)
+        button.setTitleColor(textColor, for: .normal)
         button.setImage(UIImage(named: "ic_disc", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
-        button.titleLabel?.textColor = .blue
+        
         button.addTarget(self, action:#selector(toggleEnhancedImage), for: .touchUpInside)
 
         return button
@@ -441,8 +446,11 @@ public final class EditScanViewController: UIViewController {
 
         button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
         button.setTitle("Rotate", for: .normal)
+        let textHexColor: UInt32 = 0x3067FF
+        let textColor = UIColor(hex: textHexColor)
+        button.setTitleColor(textColor, for: .normal)
         button.setImage(UIImage(named: "ic_rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
-        button.titleLabel?.textColor = .blue
+        
         button.addTarget(self, action:#selector(rotateImage), for: .touchUpInside)
 
         return button
@@ -488,8 +496,11 @@ public final class EditScanViewController: UIViewController {
 
         button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
         button.setTitle("Done", for: .normal)
+        let textHexColor: UInt32 = 0x3067FF
+        let textColor = UIColor(hex: textHexColor)
+        button.setTitleColor(textColor, for: .normal)
         button.setImage(UIImage(named: "zdc_tick_icon", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
-        button.titleLabel?.textColor = .blue
+        
         button.addTarget(self, action:#selector(finishScan), for: .touchUpInside)
 
         return button
@@ -534,6 +545,9 @@ public final class EditScanViewController: UIViewController {
         button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
         button.setTitle("Delete", for: .normal)
         button.setImage(UIImage(named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
+        let textHexColor: UInt32 = 0x3067FF
+        let textColor = UIColor(hex: textHexColor)
+        button.setTitleColor(textColor, for: .normal)
         button.titleLabel?.textColor = .blue
         button.addTarget(self, action:#selector(deleteButtonTapped), for: .touchUpInside)
 
@@ -585,6 +599,9 @@ public final class EditScanViewController: UIViewController {
         let image = UIImage(  named: "ic_trash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIButton(frame: CGRect(x: getX(number: 4), y: 0, width: 50, height: 50))
         button.setTitle("", for: .normal)
+        let textHexColor: UInt32 = 0x3067FF
+        let textColor = UIColor(hex: textHexColor)
+        button.setTitleColor(textColor, for: .normal)
         if #available(iOS 11.0, *) {
             button.setTitleColor(UIColor(named: "#000000"), for: .normal)
         } else {
@@ -617,8 +634,11 @@ public final class EditScanViewController: UIViewController {
 
         button.frame = CGRect(x: 0, y: 0, width: buttonWidth, height: buttonHeight)
         button.setTitle("Share", for: .normal)
+        let textHexColor: UInt32 = 0x3067FF
+        let textColor = UIColor(hex: textHexColor)
+        button.setTitleColor(textColor, for: .normal)
         button.setImage(UIImage(named: "ic_share", in: Bundle(for: ScannerViewController.self), compatibleWith: nil), for: .normal)
-        button.titleLabel?.textColor = .blue
+        
         button.addTarget(self, action:#selector(shareImageButton), for: .touchUpInside)
         return button
         

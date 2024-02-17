@@ -49,5 +49,8 @@ class CustomButton: UIButton {
     
     private func setup() {
         titleLabel?.textAlignment = .center
+        titleLabel?.font =  UIFont(name: "SFProText-Regular", size: 14)
+        titleLabel?.textColor = UIColor(red: 0.0, green: 0.004, blue: 0.502, alpha: 1.0)
+
     }
 }
