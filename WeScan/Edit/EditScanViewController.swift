@@ -38,7 +38,11 @@ public final class EditScanViewController: UIViewController {
         imageView.backgroundColor = .black
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.frame = CGRect(x: 0, y: 0, width: 250, height: 500)
+        var screenWidth = UIScreen.main.bounds.width;
+        let screenHeight = UIScreen.main.bounds.height;
+        let size = hasTopNotch ? bottomNotchHeight+60 : 60
+  
+        imageView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenWidth*2)
         return imageView
     }()
     
